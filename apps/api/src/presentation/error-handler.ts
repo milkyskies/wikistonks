@@ -1,6 +1,9 @@
 import { Match } from "effect";
 import type { ErrorHandler } from "hono";
-import { UserAlreadyExists } from "../application/errors";
+import {
+	DailyBonusAlreadyClaimed,
+	UserAlreadyExists,
+} from "../application/errors";
 
 // Maps domain/application errors to HTTP responses. Add cases as the
 // app grows; default falls through to a logged 500.
@@ -11,6 +14,13 @@ export const errorHandler: ErrorHandler = (error, context) => {
 			body: {
 				error: taggedError._tag,
 				firebaseUid: taggedError.firebaseUid,
+			},
+		})),
+		Match.when(Match.instanceOf(DailyBonusAlreadyClaimed), (taggedError) => ({
+			status: 409 as const,
+			body: {
+				error: taggedError._tag,
+				nextClaimAt: taggedError.nextClaimAt.toISOString(),
 			},
 		})),
 		Match.option,

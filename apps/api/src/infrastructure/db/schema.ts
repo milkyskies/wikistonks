@@ -27,6 +27,9 @@ export const usersTable = sqliteTable(
 		email: text("email").unique(),
 		displayName: text("display_name").notNull(),
 		avatarUrl: text("avatar_url"),
+		// Wallet — JPY integer, no fractional yen.
+		cashBalance: integer("cash_balance").notNull().default(0),
+		lastDailyBonusAt: integer("last_daily_bonus_at", { mode: "timestamp" }),
 		createdAt: integer("created_at", { mode: "timestamp" })
 			.notNull()
 			.$defaultFn(() => new Date()),

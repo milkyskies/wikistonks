@@ -5,6 +5,8 @@ export interface Me {
 	readonly email: Option.Option<string>;
 	readonly displayName: string;
 	readonly avatarUrl: Option.Option<string>;
+	readonly cashBalance: number;
+	readonly lastDailyBonusAt: Option.Option<Date>;
 	readonly createdAt: Date;
 	readonly updatedAt: Date;
 }
@@ -14,6 +16,8 @@ export type MeApiDto = {
 	email: string | null;
 	displayName: string;
 	avatarUrl: string | null;
+	cashBalance: number;
+	lastDailyBonusAt: string | null;
 	createdAt: string;
 	updatedAt: string;
 };
@@ -27,6 +31,11 @@ export const Me = {
 			email: Option.fromNullable(dto.email),
 			displayName: dto.displayName,
 			avatarUrl: Option.fromNullable(dto.avatarUrl),
+			cashBalance: dto.cashBalance,
+			lastDailyBonusAt: Option.map(
+				Option.fromNullable(dto.lastDailyBonusAt),
+				(value) => new Date(value),
+			),
 			createdAt: new Date(dto.createdAt),
 			updatedAt: new Date(dto.updatedAt),
 		}),

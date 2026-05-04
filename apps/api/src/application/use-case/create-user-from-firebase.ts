@@ -2,6 +2,7 @@ import { Option } from "effect";
 import { nanoid } from "nanoid";
 import type { User } from "../../domain/models/user";
 import type { UserRepository } from "../../domain/repositories/user-repository";
+import { STARTING_CASH } from "../../domain/wallet";
 import { UserAlreadyExists } from "../errors";
 
 export type CreateUserFromFirebaseInput = {
@@ -26,5 +27,6 @@ export async function createUserFromFirebase(
 		email: input.email,
 		displayName: input.displayName,
 		avatarUrl: input.avatarUrl,
+		cashBalance: STARTING_CASH,
 	});
 }

@@ -1,7 +1,8 @@
-import { eq } from "drizzle-orm";
+import { and, eq, isNull, lt, or, sql } from "drizzle-orm";
 import { Option } from "effect";
 import { User } from "../../domain/models/user";
 import type {
+	ClaimDailyBonusInput,
 	NewUser,
 	UserPatch,
 	UserRepository,
@@ -18,6 +19,8 @@ const fromRow = (row: UserRow): User =>
 		email: Option.fromNullable(row.email),
 		displayName: row.displayName,
 		avatarUrl: Option.fromNullable(row.avatarUrl),
+		cashBalance: row.cashBalance,
+		lastDailyBonusAt: Option.fromNullable(row.lastDailyBonusAt),
 		createdAt: row.createdAt,
 		updatedAt: row.updatedAt,
 	});
@@ -66,11 +69,38 @@ export const makeUserRepository = (db: Database): UserRepository => ({
 				email: Option.getOrNull(input.email),
 				displayName: input.displayName,
 				avatarUrl: Option.getOrNull(input.avatarUrl),
+				cashBalance: input.cashBalance,
 				createdAt: now,
 				updatedAt: now,
 			})
 			.returning();
 		return fromRow(row);
+	},
+
+	claimDailyBonus: async (input: ClaimDailyBonusInput) => {
+		const now = new Date();
+		const rows = await db
+			.update(usersTable)
+			.set({
+				cashBalance: sql`${usersTable.cashBalance} + ${input.amount}`,
+				lastDailyBonusAt: now,
+				updatedAt: now,
+			})
+			.where(
+				and(
+					eq(usersTable.id, input.userId),
+					or(
+						isNull(usersTable.lastDailyBonusAt),
+						lt(usersTable.lastDailyBonusAt, input.dayStart),
+					),
+				),
+			)
+			.returning();
+		const row = rows[0];
+
+		if (!row) return Option.none();
+
+		return Option.some(fromRow(row));
 	},
 
 	update: async (id, patch: UserPatch) => {
