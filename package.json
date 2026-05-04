@@ -6,6 +6,10 @@
 		"node": ">=22"
 	},
 	"pnpm": {
+		"//overrides": "drizzle-kit 0.31.x still pulls deprecated @esbuild-kit/esm-loader, which pins esbuild 0.18.20 (GHSA-67mh-4wv8-2f99). drizzle-kit 1.0 drops it. Remove when 1.0 stable lands.",
+		"overrides": {
+			"esbuild": ">=0.25.4"
+		},
 		"onlyBuiltDependencies": [
 			"@biomejs/biome",
 			"@tailwindcss/oxide",
