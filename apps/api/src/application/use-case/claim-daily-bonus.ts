@@ -2,7 +2,7 @@ import { Option } from "effect";
 import type { User } from "../../domain/models/user";
 import type { UserRepository } from "../../domain/repositories/user-repository";
 import { DAILY_BONUS_AMOUNT, nextLocalResetAfter } from "../../domain/wallet";
-import { DailyBonusAlreadyClaimed, UserNotFound } from "../errors";
+import { DailyBonusAlreadyClaimed } from "../errors";
 
 export type ClaimDailyBonusResult = {
 	user: User;
@@ -11,17 +11,12 @@ export type ClaimDailyBonusResult = {
 
 export async function claimDailyBonus(
 	users: UserRepository,
-	userId: string,
+	user: User,
 	now: Date = new Date(),
 ): Promise<ClaimDailyBonusResult> {
-	const existing = await users.findById(userId);
-	if (Option.isNone(existing)) {
-		throw new UserNotFound({ userId });
-	}
-
-	const nextDailyBonusAt = nextLocalResetAfter(now, existing.value.timezone);
+	const nextDailyBonusAt = nextLocalResetAfter(now, user.timezone);
 	const updated = await users.claimDailyBonus({
-		userId,
+		userId: user.id,
 		now,
 		nextDailyBonusAt,
 		amount: DAILY_BONUS_AMOUNT,
@@ -32,9 +27,9 @@ export async function claimDailyBonus(
 	}
 
 	throw new DailyBonusAlreadyClaimed({
-		userId,
+		userId: user.id,
 		nextClaimAt: Option.getOrElse(
-			existing.value.nextDailyBonusAt,
+			user.nextDailyBonusAt,
 			() => nextDailyBonusAt,
 		),
 	});

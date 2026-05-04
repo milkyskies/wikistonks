@@ -6,7 +6,7 @@ import type {
 	NewUser,
 	UserRepository,
 } from "../../domain/repositories/user-repository";
-import { DailyBonusAlreadyClaimed, UserNotFound } from "../errors";
+import { DailyBonusAlreadyClaimed } from "../errors";
 import { claimDailyBonus } from "./claim-daily-bonus";
 
 const baseUser = (overrides: Partial<User> = {}): User =>
@@ -25,12 +25,12 @@ const baseUser = (overrides: Partial<User> = {}): User =>
 		...overrides,
 	});
 
-const makeFakeRepo = (initial: User | null): UserRepository => {
+const makeFakeRepo = (initial: User): UserRepository => {
 	let stored = initial;
 
 	return {
 		findById: async (id) =>
-			stored && stored.id === id ? Option.some(stored) : Option.none(),
+			stored.id === id ? Option.some(stored) : Option.none(),
 		findByFirebaseUid: async () => Option.none(),
 		findByEmail: async () => Option.none(),
 		create: async (input: NewUser) => {
@@ -47,7 +47,7 @@ const makeFakeRepo = (initial: User | null): UserRepository => {
 		},
 		update: async () => Option.none(),
 		claimDailyBonus: async (input: ClaimDailyBonusInput) => {
-			if (!stored || stored.id !== input.userId) return Option.none();
+			if (stored.id !== input.userId) return Option.none();
 
 			const gate = Option.getOrNull(stored.nextDailyBonusAt);
 			if (gate && gate > input.now) return Option.none();
@@ -65,6 +65,9 @@ const makeFakeRepo = (initial: User | null): UserRepository => {
 	};
 };
 
+const currentUser = async (repo: UserRepository): Promise<User> =>
+	Option.getOrThrow(await repo.findById("user-1"));
+
 describe("claimDailyBonus", () => {
 	let repo: UserRepository;
 
@@ -75,7 +78,11 @@ describe("claimDailyBonus", () => {
 	test("first claim adds 500 and sets next to today's 8am JST", async () => {
 		const at7amJst = new Date("2026-05-04T07:00:00+09:00");
 
-		const result = await claimDailyBonus(repo, "user-1", at7amJst);
+		const result = await claimDailyBonus(
+			repo,
+			await currentUser(repo),
+			at7amJst,
+		);
 
 		expect(result.credited).toBe(500);
 		expect(result.user.cashBalance).toBe(10500);
@@ -86,12 +93,12 @@ describe("claimDailyBonus", () => {
 
 	test("second claim within the same window throws DailyBonusAlreadyClaimed", async () => {
 		const at9amJst = new Date("2026-05-04T09:00:00+09:00");
-		await claimDailyBonus(repo, "user-1", at9amJst);
+		await claimDailyBonus(repo, await currentUser(repo), at9amJst);
 
 		const at10amJst = new Date("2026-05-04T10:00:00+09:00");
-		await expect(claimDailyBonus(repo, "user-1", at10amJst)).rejects.toThrow(
-			DailyBonusAlreadyClaimed,
-		);
+		await expect(
+			claimDailyBonus(repo, await currentUser(repo), at10amJst),
+		).rejects.toThrow(DailyBonusAlreadyClaimed);
 	});
 
 	test("punctual 8am claim works every day with no drift", async () => {
@@ -99,9 +106,21 @@ describe("claimDailyBonus", () => {
 		const tuesday8am = new Date("2026-05-05T08:00:00+09:00");
 		const wednesday8am = new Date("2026-05-06T08:00:00+09:00");
 
-		const monday = await claimDailyBonus(repo, "user-1", monday8am);
-		const tuesday = await claimDailyBonus(repo, "user-1", tuesday8am);
-		const wednesday = await claimDailyBonus(repo, "user-1", wednesday8am);
+		const monday = await claimDailyBonus(
+			repo,
+			await currentUser(repo),
+			monday8am,
+		);
+		const tuesday = await claimDailyBonus(
+			repo,
+			await currentUser(repo),
+			tuesday8am,
+		);
+		const wednesday = await claimDailyBonus(
+			repo,
+			await currentUser(repo),
+			wednesday8am,
+		);
 
 		expect(monday.user.cashBalance).toBe(10500);
 		expect(tuesday.user.cashBalance).toBe(11000);
@@ -110,26 +129,17 @@ describe("claimDailyBonus", () => {
 
 	test("changing TZ between claims doesn't grant a free claim", async () => {
 		const claim1 = new Date("2026-05-04T09:00:00+09:00");
-		await claimDailyBonus(repo, "user-1", claim1);
+		await claimDailyBonus(repo, await currentUser(repo), claim1);
 
-		const userInJst = await repo.findById("user-1");
 		const updatedToUtc14 = User.make({
-			...Option.getOrThrow(userInJst),
+			...(await currentUser(repo)),
 			timezone: "Pacific/Kiritimati",
 		});
 		repo = makeFakeRepo(updatedToUtc14);
 
 		const fiveMinutesLater = new Date("2026-05-04T09:05:00+09:00");
 		await expect(
-			claimDailyBonus(repo, "user-1", fiveMinutesLater),
+			claimDailyBonus(repo, await currentUser(repo), fiveMinutesLater),
 		).rejects.toThrow(DailyBonusAlreadyClaimed);
-	});
-
-	test("missing user throws UserNotFound", async () => {
-		repo = makeFakeRepo(null);
-
-		await expect(claimDailyBonus(repo, "ghost", new Date())).rejects.toThrow(
-			UserNotFound,
-		);
 	});
 });

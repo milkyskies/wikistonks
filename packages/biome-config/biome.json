@@ -18,6 +18,7 @@
 			"_generated/",
 			"dist/",
 			"node_modules/",
+			".wrangler/",
 			"*.css",
 			"wrangler.jsonc"
 		]

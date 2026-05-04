@@ -52,7 +52,7 @@ export const meRoutes = new Hono<{
 
 		const result = await claimDailyBonus(
 			context.var.userRepository,
-			user.value.id,
+			user.value,
 		);
 
 		return context.json(toDailyBonusDto(result));
