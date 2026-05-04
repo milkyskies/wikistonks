@@ -6,7 +6,7 @@ export type MeApiDto = InferResponseType<typeof api.me.$get, 200>;
 
 export interface Me {
 	readonly id: string;
-	readonly email: Option.Option<string>;
+	readonly email: string;
 	readonly displayName: string;
 	readonly avatarUrl: Option.Option<string>;
 	readonly cashBalance: number;
@@ -23,7 +23,7 @@ export const Me = {
 	fromApi: (dto: MeApiDto): Me =>
 		Me.make({
 			id: dto.id,
-			email: Option.fromNullable(dto.email),
+			email: dto.email,
 			displayName: dto.displayName,
 			avatarUrl: Option.fromNullable(dto.avatarUrl),
 			cashBalance: dto.cashBalance,

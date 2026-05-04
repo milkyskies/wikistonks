@@ -1,7 +1,7 @@
 CREATE TABLE `users` (
 	`id` text PRIMARY KEY NOT NULL,
-	`firebase_uid` text,
-	`email` text,
+	`firebase_uid` text NOT NULL,
+	`email` text NOT NULL,
 	`display_name` text NOT NULL,
 	`avatar_url` text,
 	`cash_balance` integer DEFAULT 0 NOT NULL,

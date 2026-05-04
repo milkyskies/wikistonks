@@ -1,7 +1,7 @@
 {
 	"version": "6",
 	"dialect": "sqlite",
-	"id": "2272518b-1462-48b4-85ad-75532e7679ed",
+	"id": "7f1abc6c-99dc-4589-b4f6-6f84c3f1bedd",
 	"prevId": "00000000-0000-0000-0000-000000000000",
 	"tables": {
 		"users": {
@@ -18,14 +18,14 @@
 					"name": "firebase_uid",
 					"type": "text",
 					"primaryKey": false,
-					"notNull": false,
+					"notNull": true,
 					"autoincrement": false
 				},
 				"email": {
 					"name": "email",
 					"type": "text",
 					"primaryKey": false,
-					"notNull": false,
+					"notNull": true,
 					"autoincrement": false
 				},
 				"display_name": {

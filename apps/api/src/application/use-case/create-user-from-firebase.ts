@@ -7,7 +7,7 @@ import { UserAlreadyExists } from "../errors";
 
 export type CreateUserFromFirebaseInput = {
 	firebaseUid: string;
-	email: Option.Option<string>;
+	email: string;
 	displayName: string;
 	avatarUrl: Option.Option<string>;
 	timezone: string;
@@ -24,7 +24,7 @@ export async function createUserFromFirebase(
 
 	return users.create({
 		id: nanoid(),
-		firebaseUid: Option.some(input.firebaseUid),
+		firebaseUid: input.firebaseUid,
 		email: input.email,
 		displayName: input.displayName,
 		avatarUrl: input.avatarUrl,

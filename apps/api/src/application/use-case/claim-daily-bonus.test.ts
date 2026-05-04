@@ -12,8 +12,8 @@ import { claimDailyBonus } from "./claim-daily-bonus";
 const baseUser = (overrides: Partial<User> = {}): User =>
 	User.make({
 		id: "user-1",
-		firebaseUid: Option.some("fb-1"),
-		email: Option.some("a@b.c"),
+		firebaseUid: "fb-1",
+		email: "a@b.c",
 		displayName: "tester",
 		avatarUrl: Option.none(),
 		cashBalance: 10000,

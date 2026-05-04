@@ -18,7 +18,7 @@ export type CreateMeDto = z.infer<typeof createMeSchema>;
 
 export type MeDto = {
 	id: string;
-	email: string | null;
+	email: string;
 	displayName: string;
 	avatarUrl: string | null;
 	cashBalance: number;
@@ -31,7 +31,7 @@ export type MeDto = {
 
 export const toMeDto = (user: User): MeDto => ({
 	id: user.id,
-	email: Option.getOrNull(user.email),
+	email: user.email,
 	displayName: user.displayName,
 	avatarUrl: Option.getOrNull(user.avatarUrl),
 	cashBalance: user.cashBalance,

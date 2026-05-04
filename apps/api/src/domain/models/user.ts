@@ -2,8 +2,8 @@ import { Data, type Option } from "effect";
 
 export interface User {
 	readonly id: string;
-	readonly firebaseUid: Option.Option<string>;
-	readonly email: Option.Option<string>;
+	readonly firebaseUid: string;
+	readonly email: string;
 	readonly displayName: string;
 	readonly avatarUrl: Option.Option<string>;
 	readonly cashBalance: number;
