@@ -1,4 +1,8 @@
+import type { api } from "@/services/api/client";
 import { Data, Option } from "effect";
+import type { InferResponseType } from "hono/client";
+
+export type MeApiDto = InferResponseType<typeof api.me.$get, 200>;
 
 export interface Me {
 	readonly id: string;
@@ -6,21 +10,12 @@ export interface Me {
 	readonly displayName: string;
 	readonly avatarUrl: Option.Option<string>;
 	readonly cashBalance: number;
+	readonly timezone: string;
 	readonly lastDailyBonusAt: Option.Option<Date>;
+	readonly nextDailyBonusAt: Option.Option<Date>;
 	readonly createdAt: Date;
 	readonly updatedAt: Date;
 }
-
-export type MeApiDto = {
-	id: string;
-	email: string | null;
-	displayName: string;
-	avatarUrl: string | null;
-	cashBalance: number;
-	lastDailyBonusAt: string | null;
-	createdAt: string;
-	updatedAt: string;
-};
 
 export const Me = {
 	make: Data.case<Me>(),
@@ -32,8 +27,13 @@ export const Me = {
 			displayName: dto.displayName,
 			avatarUrl: Option.fromNullable(dto.avatarUrl),
 			cashBalance: dto.cashBalance,
+			timezone: dto.timezone,
 			lastDailyBonusAt: Option.map(
 				Option.fromNullable(dto.lastDailyBonusAt),
+				(value) => new Date(value),
+			),
+			nextDailyBonusAt: Option.map(
+				Option.fromNullable(dto.nextDailyBonusAt),
 				(value) => new Date(value),
 			),
 			createdAt: new Date(dto.createdAt),

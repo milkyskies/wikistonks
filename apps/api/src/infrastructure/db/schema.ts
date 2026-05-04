@@ -27,9 +27,11 @@ export const usersTable = sqliteTable(
 		email: text("email").unique(),
 		displayName: text("display_name").notNull(),
 		avatarUrl: text("avatar_url"),
-		// Wallet — JPY integer, no fractional yen.
 		cashBalance: integer("cash_balance").notNull().default(0),
+		timezone: text("timezone").notNull().default("UTC"),
 		lastDailyBonusAt: integer("last_daily_bonus_at", { mode: "timestamp" }),
+		// Claim gate. Anchored at claim time so a user.timezone change can't advance the window.
+		nextDailyBonusAt: integer("next_daily_bonus_at", { mode: "timestamp" }),
 		createdAt: integer("created_at", { mode: "timestamp" })
 			.notNull()
 			.$defaultFn(() => new Date()),

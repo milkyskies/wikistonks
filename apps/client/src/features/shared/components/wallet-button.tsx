@@ -1,34 +1,41 @@
 import { meQueryOptions } from "@/services/api/me/me-query-options";
 import { useClaimDailyBonus } from "@/services/api/me/use-claim-daily-bonus";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { format } from "date-fns";
+import { toZonedTime } from "date-fns-tz";
 import { Option } from "effect";
 import { Coins, Gift } from "lucide-react";
 import { useState } from "react";
 
-const yenFormatter = new Intl.NumberFormat("ja-JP", {
-	style: "currency",
-	currency: "JPY",
+const groupedNumber = new Intl.NumberFormat("en-US", {
 	maximumFractionDigits: 0,
 });
 
-const startOfUtcDay = (date: Date): number =>
-	Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
+const formatCash = (amount: number): string =>
+	`¥${groupedNumber.format(amount)}`;
 
-const canClaimToday = (lastClaim: Option.Option<Date>): boolean =>
-	Option.match(lastClaim, {
-		onNone: () => true,
-		onSome: (claimedAt) => startOfUtcDay(claimedAt) < startOfUtcDay(new Date()),
-	});
+const formatNextClaim = (instant: Date, timezone: string): string => {
+	const local = toZonedTime(instant, timezone);
+	return `${format(local, "EEE h:mma")} ${timezone}`;
+};
 
 export function WalletButton() {
 	const { data: me } = useSuspenseQuery(meQueryOptions);
 
 	if (Option.isNone(me)) return null;
 
+	const now = new Date();
+	const canClaim = Option.match(me.value.nextDailyBonusAt, {
+		onNone: () => true,
+		onSome: (instant) => instant <= now,
+	});
+
 	return (
 		<WalletButtonInner
 			cashBalance={me.value.cashBalance}
-			canClaim={canClaimToday(me.value.lastDailyBonusAt)}
+			canClaim={canClaim}
+			nextDailyBonusAt={me.value.nextDailyBonusAt}
+			timezone={me.value.timezone}
 		/>
 	);
 }
@@ -36,6 +43,8 @@ export function WalletButton() {
 interface WalletButtonInnerProps {
 	cashBalance: number;
 	canClaim: boolean;
+	nextDailyBonusAt: Option.Option<Date>;
+	timezone: string;
 }
 
 function WalletButtonInner(props: WalletButtonInnerProps) {
@@ -49,11 +58,16 @@ function WalletButtonInner(props: WalletButtonInnerProps) {
 		});
 	};
 
+	const nextClaimLabel = Option.match(props.nextDailyBonusAt, {
+		onNone: () => null,
+		onSome: (instant) => formatNextClaim(instant, props.timezone),
+	});
+
 	return (
 		<div className="flex items-center gap-3">
 			<span className="inline-flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1 text-sm font-medium tabular-nums">
 				<Coins className="size-4 text-muted-foreground" aria-hidden />
-				{yenFormatter.format(props.cashBalance)}
+				{formatCash(props.cashBalance)}
 			</span>
 
 			{props.canClaim ? (
@@ -66,6 +80,10 @@ function WalletButtonInner(props: WalletButtonInnerProps) {
 					<Gift className="size-4" aria-hidden />
 					Claim ¥500
 				</button>
+			) : nextClaimLabel ? (
+				<span className="text-xs text-muted-foreground">
+					Next: {nextClaimLabel}
+				</span>
 			) : null}
 
 			{error ? <span className="text-xs text-destructive">{error}</span> : null}

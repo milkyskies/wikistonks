@@ -2,6 +2,7 @@
 	"dependencies": {
 		"@hono/zod-validator": "^0.4.0",
 		"date-fns": "^4.1.0",
+		"date-fns-tz": "^3.2.0",
 		"drizzle-orm": "^0.45.2",
 		"effect": "^3.20.0",
 		"firebase-auth-cloudflare-workers": "^2.0.6",
@@ -11,11 +12,13 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",
+		"@cloudflare/vitest-pool-workers": "^0.15.2",
 		"@cloudflare/workers-types": "^4.20260404.1",
 		"@wikistonks/biome-config": "workspace:*",
 		"@wikistonks/tsconfig": "workspace:*",
 		"drizzle-kit": "^0.31.10",
 		"typescript": "^5.7.0",
+		"vitest": "^4.1.5",
 		"wrangler": "^4.4.0"
 	},
 	"exports": {
@@ -26,7 +29,7 @@
 	"private": true,
 	"scripts": {
 		"cf-typegen": "wrangler types --env-interface CloudflareBindings",
-		"check": "pnpm lint && pnpm typecheck",
+		"check": "pnpm lint && pnpm typecheck && pnpm test",
 		"db:generate": "drizzle-kit generate",
 		"db:migrate:local": "wrangler d1 migrations apply wikistonks --local",
 		"db:migrate:remote": "wrangler d1 migrations apply wikistonks --remote",
@@ -34,6 +37,8 @@
 		"dev": "wrangler dev",
 		"lint": "biome check .",
 		"lint:fix": "biome check --write .",
+		"test": "vitest run",
+		"test:watch": "vitest",
 		"typecheck": "tsc --noEmit"
 	},
 	"type": "module"

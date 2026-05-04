@@ -3,8 +3,15 @@ import { z } from "zod";
 import type { ClaimDailyBonusResult } from "../../application/use-case/claim-daily-bonus";
 import type { User } from "../../domain/models/user";
 
+const timezoneSchema = z
+	.string()
+	.min(1)
+	.max(64)
+	.regex(/^[A-Za-z][A-Za-z0-9_+\-/]*$/, "Invalid IANA timezone");
+
 export const createMeSchema = z.object({
 	displayName: z.string().min(1).max(40),
+	timezone: timezoneSchema,
 });
 
 export type CreateMeDto = z.infer<typeof createMeSchema>;
@@ -15,7 +22,9 @@ export type MeDto = {
 	displayName: string;
 	avatarUrl: string | null;
 	cashBalance: number;
+	timezone: string;
 	lastDailyBonusAt: string | null;
+	nextDailyBonusAt: string | null;
 	createdAt: string;
 	updatedAt: string;
 };
@@ -26,7 +35,12 @@ export const toMeDto = (user: User): MeDto => ({
 	displayName: user.displayName,
 	avatarUrl: Option.getOrNull(user.avatarUrl),
 	cashBalance: user.cashBalance,
+	timezone: user.timezone,
 	lastDailyBonusAt: Option.match(user.lastDailyBonusAt, {
+		onNone: () => null,
+		onSome: (date) => date.toISOString(),
+	}),
+	nextDailyBonusAt: Option.match(user.nextDailyBonusAt, {
 		onNone: () => null,
 		onSome: (date) => date.toISOString(),
 	}),

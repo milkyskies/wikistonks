@@ -1,4 +1,4 @@
-import { and, eq, isNull, lt, or, sql } from "drizzle-orm";
+import { and, eq, lte, or, sql } from "drizzle-orm";
 import { Option } from "effect";
 import { User } from "../../domain/models/user";
 import type {
@@ -20,7 +20,9 @@ const fromRow = (row: UserRow): User =>
 		displayName: row.displayName,
 		avatarUrl: Option.fromNullable(row.avatarUrl),
 		cashBalance: row.cashBalance,
+		timezone: row.timezone,
 		lastDailyBonusAt: Option.fromNullable(row.lastDailyBonusAt),
+		nextDailyBonusAt: Option.fromNullable(row.nextDailyBonusAt),
 		createdAt: row.createdAt,
 		updatedAt: row.updatedAt,
 	});
@@ -70,6 +72,7 @@ export const makeUserRepository = (db: Database): UserRepository => ({
 				displayName: input.displayName,
 				avatarUrl: Option.getOrNull(input.avatarUrl),
 				cashBalance: input.cashBalance,
+				timezone: input.timezone,
 				createdAt: now,
 				updatedAt: now,
 			})
@@ -78,20 +81,20 @@ export const makeUserRepository = (db: Database): UserRepository => ({
 	},
 
 	claimDailyBonus: async (input: ClaimDailyBonusInput) => {
-		const now = new Date();
 		const rows = await db
 			.update(usersTable)
 			.set({
 				cashBalance: sql`${usersTable.cashBalance} + ${input.amount}`,
-				lastDailyBonusAt: now,
-				updatedAt: now,
+				lastDailyBonusAt: input.now,
+				nextDailyBonusAt: input.nextDailyBonusAt,
+				updatedAt: input.now,
 			})
 			.where(
 				and(
 					eq(usersTable.id, input.userId),
 					or(
-						isNull(usersTable.lastDailyBonusAt),
-						lt(usersTable.lastDailyBonusAt, input.dayStart),
+						sql`${usersTable.nextDailyBonusAt} IS NULL`,
+						lte(usersTable.nextDailyBonusAt, input.now),
 					),
 				),
 			)
@@ -107,6 +110,7 @@ export const makeUserRepository = (db: Database): UserRepository => ({
 		const updates: Partial<typeof usersTable.$inferInsert> = {
 			updatedAt: new Date(),
 		};
+
 		Option.match(patch.email, {
 			onNone: () => {},
 			onSome: (value) => {
@@ -123,6 +127,12 @@ export const makeUserRepository = (db: Database): UserRepository => ({
 			onNone: () => {},
 			onSome: (value) => {
 				updates.avatarUrl = value;
+			},
+		});
+		Option.match(patch.timezone, {
+			onNone: () => {},
+			onSome: (value) => {
+				updates.timezone = value;
 			},
 		});
 

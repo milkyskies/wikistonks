@@ -10,6 +10,7 @@ export type CreateUserFromFirebaseInput = {
 	email: Option.Option<string>;
 	displayName: string;
 	avatarUrl: Option.Option<string>;
+	timezone: string;
 };
 
 export async function createUserFromFirebase(
@@ -28,5 +29,6 @@ export async function createUserFromFirebase(
 		displayName: input.displayName,
 		avatarUrl: input.avatarUrl,
 		cashBalance: STARTING_CASH,
+		timezone: input.timezone,
 	});
 }

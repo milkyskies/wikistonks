@@ -35,6 +35,7 @@ export const meRoutes = new Hono<{
 			email: context.var.firebaseEmail,
 			displayName: body.displayName,
 			avatarUrl: context.var.firebasePicture,
+			timezone: body.timezone,
 		});
 
 		return context.json(toMeDto(user), 201);

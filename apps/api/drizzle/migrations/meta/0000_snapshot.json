@@ -1,7 +1,7 @@
 {
 	"version": "6",
 	"dialect": "sqlite",
-	"id": "7e291bdc-2d28-4440-8dc0-020cc4332c43",
+	"id": "9e67e4b2-3e5d-4287-bd4d-8c2ca282a6ca",
 	"prevId": "00000000-0000-0000-0000-000000000000",
 	"tables": {
 		"posts": {
@@ -108,8 +108,23 @@
 					"autoincrement": false,
 					"default": 0
 				},
+				"timezone": {
+					"name": "timezone",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false,
+					"default": "'UTC'"
+				},
 				"last_daily_bonus_at": {
 					"name": "last_daily_bonus_at",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"next_daily_bonus_at": {
+					"name": "next_daily_bonus_at",
 					"type": "integer",
 					"primaryKey": false,
 					"notNull": false,

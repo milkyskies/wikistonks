@@ -15,7 +15,9 @@ CREATE TABLE `users` (
 	`display_name` text NOT NULL,
 	`avatar_url` text,
 	`cash_balance` integer DEFAULT 0 NOT NULL,
+	`timezone` text DEFAULT 'UTC' NOT NULL,
 	`last_daily_bonus_at` integer,
+	`next_daily_bonus_at` integer,
 	`created_at` integer NOT NULL,
 	`updated_at` integer NOT NULL
 );
