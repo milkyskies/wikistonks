@@ -1,0 +1,48 @@
+# Project tasks — individual task scripts live in .mise/tasks/ (managed by milky-kit sync)
+# This file defines composite tasks and project-specific overrides.
+
+[tools]
+rust = "latest"
+node = "22"
+
+[tasks.dev]
+description = "Full stack in tmux (API + client)"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+SESSION="wikistonks"
+if tmux has-session -t "$SESSION" 2>/dev/null; then
+  echo "Session '$SESSION' already running. Attaching..."
+  exec tmux attach -t "$SESSION"
+fi
+tmux new-session -d -s "$SESSION" -n api
+tmux send-keys -t "$SESSION:api" "mise run dev:api" Enter
+tmux new-window -t "$SESSION" -n client
+tmux send-keys -t "$SESSION:client" "mise run dev:client" Enter
+tmux select-window -t "$SESSION:api"
+exec tmux attach -t "$SESSION"
+"""
+
+[tasks.check]
+description = "Run all quality gates"
+depends = ["check:*"]
+
+[tasks.fmt]
+description = "Format everything"
+depends = ["fmt:*"]
+
+[tasks."db:setup"]
+description = "Start database, migrate, and seed"
+depends = ["db:up"]
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+echo "Waiting for database to be ready..."
+sleep 2
+mise run db:migrate
+mise run db:seed 2>/dev/null || true
+"""
+
+[tasks."db:seed"]
+description = "Seed development data"
+run = 'echo "No seed script configured yet — edit mise.toml to add one"'

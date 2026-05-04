@@ -1,0 +1,5 @@
+#!/bin/bash
+#MISE description="Start frontend dev server"
+set -euo pipefail
+
+cd apps/client && pnpm dev

@@ -1,0 +1,33 @@
+kit_version = "0.1.0"
+kit_commit = "0873904"
+last_sync = "2026-05-04T11:24:53Z"
+managed = [
+    ".claude/rules/worktrees.md",
+    ".claude/rules/general.md",
+    ".claude/rules/workflow.md",
+    ".claude/rules/testing.md",
+    ".claude/rules/claude-meta.md",
+    ".claude/rules/config-and-env.md",
+    ".mise/tasks/worktree/setup",
+    ".mise/tasks/worktree/cleanup",
+    "AGENTS.md",
+    "opencode.json",
+    ".claude/rules/ts-style.md",
+    ".claude/rules/models.md",
+    ".claude/rules/blank-lines.md",
+    ".claude/rules/hono-patterns.md",
+    ".mise/tasks/dev/api",
+    ".claude/rules/frontend-implementation.md",
+    ".claude/rules/frontend-structure.md",
+    ".claude/rules/ui-components.md",
+    ".mise/tasks/dev/client",
+    ".mise/tasks/check/frontend",
+    ".mise/tasks/fmt/frontend",
+    ".mise/tasks/api/generate",
+    ".claude/rules/pnpm.md",
+    ".claude/rules/security.md",
+    ".claude/skills/ship/SKILL.md",
+    ".claude/skills/rulify/SKILL.md",
+    ".claude/skills/retrospective/SKILL.md",
+    ".claude/skills/land/SKILL.md",
+]

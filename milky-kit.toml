@@ -1,0 +1,19 @@
+[project]
+name = "wikistonks"
+worktree_dir = "wikistonks-worktrees"
+
+[stack]
+languages = ["ts"]
+
+[[apps]]
+name = "api"
+template = "hono"
+variants = { db = "d1", api_style = "rpc", auth = "firebase" }
+
+[[apps]]
+name = "client"
+template = "react"
+variants = { ui = "base-ui", auth = "firebase" }
+
+[skills]
+include = ["ship", "rulify", "retrospective", "land"]

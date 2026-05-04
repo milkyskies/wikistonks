@@ -1,0 +1,32 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"compatibility_date": "2026-04-01",
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_id": "5ec6e812-a6be-4f96-b431-ea76725eb016",
+			"database_name": "wikistonks",
+			"migrations_dir": "drizzle/migrations"
+		}
+	],
+	"kv_namespaces": [
+		{
+			"binding": "JWK_CACHE",
+			"id": "5be226e602dc48079c48052d6904ca23"
+		},
+		{
+			"binding": "USER_CACHE",
+			"id": "4d2e3dd563c443b48b8031bf8ed844d4"
+		}
+	],
+	"main": "src/app.ts",
+	"name": "wikistonks-api",
+	"observability": {
+		"enabled": true,
+		"head_sampling_rate": 1
+	},
+	"vars": {
+		"CORS_ORIGINS": "https://wikistonks.app",
+		"FIREBASE_PROJECT_ID": "wikistonks"
+	}
+}

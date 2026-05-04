@@ -1,0 +1,40 @@
+{
+	"dependencies": {
+		"@hono/zod-validator": "^0.4.0",
+		"date-fns": "^4.1.0",
+		"drizzle-orm": "^0.45.2",
+		"effect": "^3.20.0",
+		"firebase-auth-cloudflare-workers": "^2.0.6",
+		"hono": "^4.12.10",
+		"nanoid": "^5.1.7",
+		"zod": "^3.23.0"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.9.4",
+		"@cloudflare/workers-types": "^4.20260404.1",
+		"@wikistonks/biome-config": "workspace:*",
+		"@wikistonks/tsconfig": "workspace:*",
+		"drizzle-kit": "^0.31.10",
+		"typescript": "^5.7.0",
+		"wrangler": "^4.4.0"
+	},
+	"exports": {
+		".": "./src/app.ts",
+		"./client": "./src/client.ts"
+	},
+	"name": "@wikistonks/api",
+	"private": true,
+	"scripts": {
+		"cf-typegen": "wrangler types --env-interface CloudflareBindings",
+		"check": "pnpm lint && pnpm typecheck",
+		"db:generate": "drizzle-kit generate",
+		"db:migrate:local": "wrangler d1 migrations apply wikistonks --local",
+		"db:migrate:remote": "wrangler d1 migrations apply wikistonks --remote",
+		"deploy": "wrangler deploy --minify",
+		"dev": "wrangler dev",
+		"lint": "biome check .",
+		"lint:fix": "biome check --write .",
+		"typecheck": "tsc --noEmit"
+	},
+	"type": "module"
+}
