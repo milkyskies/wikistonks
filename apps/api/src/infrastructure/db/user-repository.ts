@@ -15,8 +15,8 @@ type UserRow = typeof usersTable.$inferSelect;
 const fromRow = (row: UserRow): User =>
 	User.make({
 		id: row.id,
-		firebaseUid: Option.fromNullable(row.firebaseUid),
-		email: Option.fromNullable(row.email),
+		firebaseUid: row.firebaseUid,
+		email: row.email,
 		displayName: row.displayName,
 		avatarUrl: Option.fromNullable(row.avatarUrl),
 		cashBalance: row.cashBalance,
@@ -67,8 +67,8 @@ export const makeUserRepository = (db: Database): UserRepository => ({
 			.insert(usersTable)
 			.values({
 				id: input.id,
-				firebaseUid: Option.getOrNull(input.firebaseUid),
-				email: Option.getOrNull(input.email),
+				firebaseUid: input.firebaseUid,
+				email: input.email,
 				displayName: input.displayName,
 				avatarUrl: Option.getOrNull(input.avatarUrl),
 				cashBalance: input.cashBalance,
@@ -111,12 +111,6 @@ export const makeUserRepository = (db: Database): UserRepository => ({
 			updatedAt: new Date(),
 		};
 
-		Option.match(patch.email, {
-			onNone: () => {},
-			onSome: (value) => {
-				updates.email = value;
-			},
-		});
 		Option.match(patch.displayName, {
 			onNone: () => {},
 			onSome: (value) => {

@@ -4,8 +4,8 @@ export const usersTable = sqliteTable(
 	"users",
 	{
 		id: text("id").primaryKey(),
-		firebaseUid: text("firebase_uid").unique(),
-		email: text("email").unique(),
+		firebaseUid: text("firebase_uid").notNull().unique(),
+		email: text("email").notNull().unique(),
 		displayName: text("display_name").notNull(),
 		avatarUrl: text("avatar_url"),
 		cashBalance: integer("cash_balance").notNull().default(0),

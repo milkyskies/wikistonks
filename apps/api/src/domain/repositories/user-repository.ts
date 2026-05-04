@@ -3,8 +3,8 @@ import type { User } from "../models/user";
 
 export type NewUser = {
 	id: string;
-	firebaseUid: Option.Option<string>;
-	email: Option.Option<string>;
+	firebaseUid: string;
+	email: string;
 	displayName: string;
 	avatarUrl: Option.Option<string>;
 	cashBalance: number;
@@ -12,7 +12,6 @@ export type NewUser = {
 };
 
 export type UserPatch = {
-	email: Option.Option<string>;
 	displayName: Option.Option<string>;
 	avatarUrl: Option.Option<string>;
 	timezone: Option.Option<string>;

@@ -3,7 +3,7 @@
 
 [tools]
 rust = "latest"
-node = "22"
+node = "22.18"
 
 [tasks.dev]
 description = "Full stack in tmux (API + client)"

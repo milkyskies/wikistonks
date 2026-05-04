@@ -30,9 +30,14 @@ export const meRoutes = new Hono<{
 	})
 	.post("/me", zValidator("json", createMeSchema), async (context) => {
 		const body = context.req.valid("json");
+
+		if (Option.isNone(context.var.firebaseEmail)) {
+			return context.json({ error: "EmailRequired" }, 400);
+		}
+
 		const user = await createUserFromFirebase(context.var.userRepository, {
 			firebaseUid: context.var.firebaseUid,
-			email: context.var.firebaseEmail,
+			email: context.var.firebaseEmail.value,
 			displayName: body.displayName,
 			avatarUrl: context.var.firebasePicture,
 			timezone: body.timezone,
