@@ -1,9 +1,10 @@
 import "@/assets/styles.css";
 
 import { AuthState, useAuth } from "@/features/auth/use-auth";
+import { FullPageLoader } from "@/features/shared/components/full-page-loader";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
-import { StrictMode } from "react";
+import { StrictMode, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { routeTree } from "./app/routeTree.gen";
 
@@ -18,7 +19,7 @@ const queryClient = new QueryClient({
 
 const router = createRouter({
 	routeTree,
-	context: { auth: AuthState.Loading(), queryClient },
+	context: { auth: AuthState.SignedOut(), queryClient },
 });
 
 declare module "@tanstack/react-router" {
@@ -29,6 +30,7 @@ declare module "@tanstack/react-router" {
 
 function App() {
 	const auth = useAuth();
+
 	return <RouterProvider router={router} context={{ auth, queryClient }} />;
 }
 
@@ -41,7 +43,9 @@ if (!rootElement) {
 createRoot(rootElement).render(
 	<StrictMode>
 		<QueryClientProvider client={queryClient}>
-			<App />
+			<Suspense fallback={<FullPageLoader />}>
+				<App />
+			</Suspense>
 		</QueryClientProvider>
 	</StrictMode>,
 );

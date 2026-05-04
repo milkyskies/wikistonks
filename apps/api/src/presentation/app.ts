@@ -7,12 +7,8 @@ import {
 	type RepositoryVariables,
 	repositoriesMiddleware,
 } from "./middleware/repositories";
-import {
-	type RequireUserVariables,
-	requireUserMiddleware,
-} from "./middleware/require-user";
+import type { RequireUserVariables } from "./middleware/require-user";
 import { meRoutes } from "./routes/me-routes";
-import { postRoutes } from "./routes/post-routes";
 
 export const app = new Hono<{
 	Bindings: Bindings;
@@ -21,6 +17,4 @@ export const app = new Hono<{
 	.use("*", corsMiddleware)
 	.use("*", repositoriesMiddleware)
 	.onError(errorHandler)
-	.route("/", meRoutes)
-	.use("/api/*", requireUserMiddleware)
-	.route("/", postRoutes);
+	.route("/", meRoutes);

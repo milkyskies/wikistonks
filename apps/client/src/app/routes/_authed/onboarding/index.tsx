@@ -1,3 +1,6 @@
+import { Button } from "@/features/shared/components/button";
+import { Select, type SelectOption } from "@/features/shared/components/select";
+import { TextField } from "@/features/shared/components/text-field";
 import { useCreateMe } from "@/services/api/me/use-create-me";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
@@ -14,12 +17,13 @@ const detectBrowserTimezone = (): string => {
 	}
 };
 
-const listTimezones = (): readonly string[] => {
-	if (typeof Intl.supportedValuesOf === "function") {
-		return Intl.supportedValuesOf("timeZone");
-	}
+const listTimezones = (): readonly SelectOption[] => {
+	const zones =
+		typeof Intl.supportedValuesOf === "function"
+			? Intl.supportedValuesOf("timeZone")
+			: ["UTC"];
 
-	return ["UTC"];
+	return zones.map((zone) => ({ value: zone, label: zone }));
 };
 
 function OnboardingPage() {
@@ -49,53 +53,30 @@ function OnboardingPage() {
 	};
 
 	return (
-		<div className="flex min-h-screen items-center justify-center p-6">
-			<form onSubmit={handleSubmit} className="w-full max-w-sm space-y-4">
-				<h1 className="text-2xl font-bold">Welcome to wikistonks</h1>
-				<p className="text-sm text-muted-foreground">
-					Pick a display name and confirm your timezone. Your daily ¥500 bonus
-					resets at 8am in this timezone.
-				</p>
+		<form onSubmit={handleSubmit} className="w-full space-y-4">
+			<h1 className="text-2xl font-bold">Welcome to wikistonks</h1>
 
-				<label className="block space-y-1">
-					<span className="text-sm font-medium">Display name</span>
-					<input
-						type="text"
-						placeholder="trader-san"
-						value={displayName}
-						onChange={(changeEvent) => setDisplayName(changeEvent.target.value)}
-						required
-						minLength={1}
-						maxLength={40}
-						className="w-full rounded-md border border-border bg-background px-3 py-2"
-					/>
-				</label>
+			<TextField
+				label="Display name"
+				value={displayName}
+				onChange={setDisplayName}
+				required
+				minLength={1}
+				maxLength={40}
+			/>
 
-				<label className="block space-y-1">
-					<span className="text-sm font-medium">Timezone</span>
-					<select
-						value={timezone}
-						onChange={(changeEvent) => setTimezone(changeEvent.target.value)}
-						className="w-full rounded-md border border-border bg-background px-3 py-2"
-					>
-						{timezones.map((zoneName) => (
-							<option key={zoneName} value={zoneName}>
-								{zoneName}
-							</option>
-						))}
-					</select>
-				</label>
+			<Select
+				label="Timezone"
+				value={timezone}
+				onChange={setTimezone}
+				options={timezones}
+			/>
 
-				{error ? <p className="text-sm text-destructive">{error}</p> : null}
+			{error ? <p className="text-sm text-destructive">{error}</p> : null}
 
-				<button
-					type="submit"
-					disabled={createMe.isPending}
-					className="w-full rounded-md bg-primary px-4 py-2 font-medium text-primary-foreground disabled:opacity-50"
-				>
-					{createMe.isPending ? "Creating..." : "Continue"}
-				</button>
-			</form>
-		</div>
+			<Button type="submit" loading={createMe.isPending} className="w-full">
+				Continue
+			</Button>
+		</form>
 	);
 }

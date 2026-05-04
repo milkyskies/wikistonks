@@ -1,3 +1,4 @@
+import { Button } from "@/features/shared/components/button";
 import { meQueryOptions } from "@/services/api/me/me-query-options";
 import { useClaimDailyBonus } from "@/services/api/me/use-claim-daily-bonus";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -71,15 +72,14 @@ function WalletButtonInner(props: WalletButtonInnerProps) {
 			</span>
 
 			{props.canClaim ? (
-				<button
-					type="button"
+				<Button
 					onClick={handleClaim}
-					disabled={claim.isPending}
-					className="inline-flex items-center gap-1.5 rounded-md bg-primary px-2.5 py-1 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50"
+					loading={claim.isPending}
+					className="px-2.5 py-1 text-sm"
 				>
 					<Gift className="size-4" aria-hidden />
 					Claim ¥500
-				</button>
+				</Button>
 			) : nextClaimLabel ? (
 				<span className="text-xs text-muted-foreground">
 					Next: {nextClaimLabel}

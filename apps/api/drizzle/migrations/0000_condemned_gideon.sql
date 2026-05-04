@@ -1,13 +1,3 @@
-CREATE TABLE `posts` (
-	`id` text PRIMARY KEY NOT NULL,
-	`title` text NOT NULL,
-	`body` text NOT NULL,
-	`published_at` integer,
-	`created_at` integer NOT NULL,
-	`updated_at` integer NOT NULL
-);
---> statement-breakpoint
-CREATE INDEX `idx_posts_created_at` ON `posts` (`created_at`);--> statement-breakpoint
 CREATE TABLE `users` (
 	`id` text PRIMARY KEY NOT NULL,
 	`firebase_uid` text,
