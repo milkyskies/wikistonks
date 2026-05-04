@@ -6,6 +6,10 @@ export interface User {
 	readonly email: Option.Option<string>;
 	readonly displayName: string;
 	readonly avatarUrl: Option.Option<string>;
+	readonly cashBalance: number;
+	readonly timezone: string;
+	readonly lastDailyBonusAt: Option.Option<Date>;
+	readonly nextDailyBonusAt: Option.Option<Date>;
 	readonly createdAt: Date;
 	readonly updatedAt: Date;
 }

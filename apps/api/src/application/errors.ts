@@ -5,9 +5,17 @@ import { Data } from "effect";
 // route handlers free of HTTP-status logic.
 
 export class UserNotFound extends Data.TaggedError("UserNotFound")<{
-	firebaseUid: string;
+	userId?: string;
+	firebaseUid?: string;
 }> {}
 
 export class UserAlreadyExists extends Data.TaggedError("UserAlreadyExists")<{
 	firebaseUid: string;
+}> {}
+
+export class DailyBonusAlreadyClaimed extends Data.TaggedError(
+	"DailyBonusAlreadyClaimed",
+)<{
+	userId: string;
+	nextClaimAt: Date;
 }> {}

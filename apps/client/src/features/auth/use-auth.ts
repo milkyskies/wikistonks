@@ -1,25 +1,28 @@
 import { firebaseAuth } from "@/services/firebase/firebase";
 import { Data } from "effect";
 import { type User as FirebaseUser, onAuthStateChanged } from "firebase/auth";
-import { useEffect, useState } from "react";
+import { use, useSyncExternalStore } from "react";
 
 export type AuthState = Data.TaggedEnum<{
-	Loading: object;
 	SignedIn: { readonly user: FirebaseUser };
 	SignedOut: object;
 }>;
 
 export const AuthState = Data.taggedEnum<AuthState>();
 
+const toState = (user: FirebaseUser | null): AuthState =>
+	user ? AuthState.SignedIn({ user }) : AuthState.SignedOut();
+
+const authReady = firebaseAuth.authStateReady();
+
+const subscribe = (notify: () => void) =>
+	onAuthStateChanged(firebaseAuth, notify);
+const getSnapshot = () => firebaseAuth.currentUser;
+
 export function useAuth(): AuthState {
-	const [state, setState] = useState<AuthState>(AuthState.Loading());
+	use(authReady);
 
-	useEffect(() => {
-		const unsubscribe = onAuthStateChanged(firebaseAuth, (user) => {
-			setState(user ? AuthState.SignedIn({ user }) : AuthState.SignedOut());
-		});
-		return unsubscribe;
-	}, []);
+	const user = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 
-	return state;
+	return toState(user);
 }

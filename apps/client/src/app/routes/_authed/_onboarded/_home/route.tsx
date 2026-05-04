@@ -1,3 +1,4 @@
+import { WalletButton } from "@/features/shared/components/wallet-button";
 import { Outlet, createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authed/_onboarded/_home")({
@@ -8,7 +9,10 @@ function HomeLayout() {
 	return (
 		<div className="min-h-screen flex flex-col">
 			<nav className="border-b px-6 py-3 flex items-center gap-6">
-				<span className="font-semibold text-lg">{"wikistonks"}</span>
+				<span className="font-semibold text-lg">wikistonks</span>
+				<div className="ml-auto">
+					<WalletButton />
+				</div>
 			</nav>
 			<main className="flex-1 p-6">
 				<Outlet />

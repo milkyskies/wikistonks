@@ -17,7 +17,6 @@ import { Route as PublicSignInIndexRouteImport } from './routes/_public/sign-in/
 import { Route as AuthedOnboardingIndexRouteImport } from './routes/_authed/onboarding/index'
 import { Route as AuthedOnboardedHomeRouteRouteImport } from './routes/_authed/_onboarded/_home/route'
 import { Route as AuthedOnboardedHomeIndexRouteImport } from './routes/_authed/_onboarded/_home/index'
-import { Route as AuthedOnboardedHomePostsRouteImport } from './routes/_authed/_onboarded/_home/posts'
 
 const PublicRouteRoute = PublicRouteRouteImport.update({
   id: '/_public',
@@ -57,26 +56,18 @@ const AuthedOnboardedHomeIndexRoute =
     path: '/',
     getParentRoute: () => AuthedOnboardedHomeRouteRoute,
   } as any)
-const AuthedOnboardedHomePostsRoute =
-  AuthedOnboardedHomePostsRouteImport.update({
-    id: '/posts',
-    path: '/posts',
-    getParentRoute: () => AuthedOnboardedHomeRouteRoute,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthedOnboardedHomeIndexRoute
   '/onboarding/': typeof AuthedOnboardingIndexRoute
   '/sign-in/': typeof PublicSignInIndexRoute
   '/sign-up/': typeof PublicSignUpIndexRoute
-  '/posts': typeof AuthedOnboardedHomePostsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof AuthedOnboardedHomeIndexRoute
   '/onboarding': typeof AuthedOnboardingIndexRoute
   '/sign-in': typeof PublicSignInIndexRoute
   '/sign-up': typeof PublicSignUpIndexRoute
-  '/posts': typeof AuthedOnboardedHomePostsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -87,14 +78,13 @@ export interface FileRoutesById {
   '/_authed/onboarding/': typeof AuthedOnboardingIndexRoute
   '/_public/sign-in/': typeof PublicSignInIndexRoute
   '/_public/sign-up/': typeof PublicSignUpIndexRoute
-  '/_authed/_onboarded/_home/posts': typeof AuthedOnboardedHomePostsRoute
   '/_authed/_onboarded/_home/': typeof AuthedOnboardedHomeIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/onboarding/' | '/sign-in/' | '/sign-up/' | '/posts'
+  fullPaths: '/' | '/onboarding/' | '/sign-in/' | '/sign-up/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/onboarding' | '/sign-in' | '/sign-up' | '/posts'
+  to: '/' | '/onboarding' | '/sign-in' | '/sign-up'
   id:
     | '__root__'
     | '/_authed'
@@ -104,7 +94,6 @@ export interface FileRouteTypes {
     | '/_authed/onboarding/'
     | '/_public/sign-in/'
     | '/_public/sign-up/'
-    | '/_authed/_onboarded/_home/posts'
     | '/_authed/_onboarded/_home/'
   fileRoutesById: FileRoutesById
 }
@@ -171,24 +160,15 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedOnboardedHomeIndexRouteImport
       parentRoute: typeof AuthedOnboardedHomeRouteRoute
     }
-    '/_authed/_onboarded/_home/posts': {
-      id: '/_authed/_onboarded/_home/posts'
-      path: '/posts'
-      fullPath: '/posts'
-      preLoaderRoute: typeof AuthedOnboardedHomePostsRouteImport
-      parentRoute: typeof AuthedOnboardedHomeRouteRoute
-    }
   }
 }
 
 interface AuthedOnboardedHomeRouteRouteChildren {
-  AuthedOnboardedHomePostsRoute: typeof AuthedOnboardedHomePostsRoute
   AuthedOnboardedHomeIndexRoute: typeof AuthedOnboardedHomeIndexRoute
 }
 
 const AuthedOnboardedHomeRouteRouteChildren: AuthedOnboardedHomeRouteRouteChildren =
   {
-    AuthedOnboardedHomePostsRoute: AuthedOnboardedHomePostsRoute,
     AuthedOnboardedHomeIndexRoute: AuthedOnboardedHomeIndexRoute,
   }
 

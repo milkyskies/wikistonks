@@ -6,6 +6,7 @@ import { Option } from "effect";
 
 export type CreateMeInput = {
 	displayName: string;
+	timezone: string;
 };
 
 export function useCreateMe() {

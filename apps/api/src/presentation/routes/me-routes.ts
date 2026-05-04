@@ -1,10 +1,11 @@
 import { zValidator } from "@hono/zod-validator";
 import { Option } from "effect";
 import { Hono } from "hono";
+import { claimDailyBonus } from "../../application/use-case/claim-daily-bonus";
 import { createUserFromFirebase } from "../../application/use-case/create-user-from-firebase";
 import { findUserByFirebaseUid } from "../../application/use-case/find-user-by-firebase-uid";
 import type { Bindings } from "../../infrastructure/env";
-import { createMeSchema, toMeDto } from "../dto/me-dto";
+import { createMeSchema, toDailyBonusDto, toMeDto } from "../dto/me-dto";
 import { type AuthVariables, authMiddleware } from "../middleware/auth";
 import type { RepositoryVariables } from "../middleware/repositories";
 
@@ -15,6 +16,7 @@ export const meRoutes = new Hono<{
 	Variables: Variables;
 }>()
 	.use("/me", authMiddleware)
+	.use("/me/daily-bonus", authMiddleware)
 	.get("/me", async (context) => {
 		const user = await findUserByFirebaseUid(
 			context.var.userRepository,
@@ -33,7 +35,25 @@ export const meRoutes = new Hono<{
 			email: context.var.firebaseEmail,
 			displayName: body.displayName,
 			avatarUrl: context.var.firebasePicture,
+			timezone: body.timezone,
 		});
 
 		return context.json(toMeDto(user), 201);
+	})
+	.post("/me/daily-bonus", async (context) => {
+		const user = await findUserByFirebaseUid(
+			context.var.userRepository,
+			context.var.firebaseUid,
+		);
+
+		if (Option.isNone(user)) {
+			return context.json({ error: "ProfileRequired" }, 404);
+		}
+
+		const result = await claimDailyBonus(
+			context.var.userRepository,
+			user.value,
+		);
+
+		return context.json(toDailyBonusDto(result));
 	});
